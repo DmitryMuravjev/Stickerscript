@@ -1,1 +1,28 @@
+class Donuts {
+	private $group;
+	private $token;
+	private $v = 1;
+	
+	function __construct($group, $token) {
+		$this -> group = $group;
+		$this -> token = $token;
+	}
+	public function request($method, $params = []) {
+		if (!isset($params['group'])) $params['group'] = $this -> group;
+		if (!isset($params['token'])) $params['token'] = $this -> token;
+		if (!isset($params['v'])) $params['v'] = $this -> v;
+		
+		$ch = curl_init();
+		curl_setopt_array($ch, [
+			CURLOPT_URL => 'https://api.vkdonuts.ru/' . $method,
+			CURLOPT_HTTPHEADER => ['Content-type: application/json'],
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_POST => true,
+			CURLOPT_POSTFIELDS => json_encode($params)
+		]);
+		$response = curl_exec($ch);
+		curl_close($ch);
 
+		return json_decode($response, true);
+	}
+}
